@@ -333,7 +333,7 @@ SMODS.Back {
 		G.GAME.starting_params.grosmicheldeck = true
 		G.E_MANAGER:add_event(Event({
 			func = function()
-				local card1 = create_card("Joker", G.jokers, nil, nil, nil, nil, 'j_gros_michel')
+				local card1 = shen_create_card("Joker", G.jokers, nil, nil, nil, nil, 'j_gros_michel')
 				card1:set_edition({})
 				card1:add_to_deck()
 				G.jokers:emplace(card1)
@@ -491,7 +491,7 @@ SMODS.Back {
 				args.chips = math.floor(tot/2)
 				args.mult = math.floor(tot/2)
 				update_hand_text({delay = 0}, {mult = args.mult, chips = args.chips})
-		
+
 				G.E_MANAGER:add_event(Event({
 					func = (function()
 						local text = localize('k_balanced')
@@ -508,7 +508,7 @@ SMODS.Back {
 							blockable = false,
 							blocking = false,
 							delay =  4.3,
-							func = (function() 
+							func = (function()
 									ease_colour(G.C.UI_CHIPS, G.C.BLUE, 2)
 									ease_colour(G.C.UI_MULT, G.C.RED, 2)
 								return true
@@ -520,7 +520,7 @@ SMODS.Back {
 							blocking = false,
 							no_delete = true,
 							delay =  6.3,
-							func = (function() 
+							func = (function()
 								G.C.UI_CHIPS[1], G.C.UI_CHIPS[2], G.C.UI_CHIPS[3], G.C.UI_CHIPS[4] = G.C.BLUE[1], G.C.BLUE[2], G.C.BLUE[3], G.C.BLUE[4]
 								G.C.UI_MULT[1], G.C.UI_MULT[2], G.C.UI_MULT[3], G.C.UI_MULT[4] = G.C.RED[1], G.C.RED[2], G.C.RED[3], G.C.RED[4]
 								return true
@@ -1123,7 +1123,7 @@ function Card.calculate_seal(self, context)
 end
 
 local shen_common_events_createcard = create_card
-function create_card(_type, area, legendary, _rarity, skip_materialize, soulable, forced_key, key_append)
+function shen_create_card(_type, area, legendary, _rarity, skip_materialize, soulable, forced_key, key_append)
 	local r_val = shen_common_events_createcard(_type, area, legendary, _rarity, skip_materialize, soulable, forced_key,
 		key_append)
 	if G.GAME.starting_params.freakydeck then
@@ -1337,7 +1337,7 @@ function G.FUNCS.discard_cards_from_highlighted(e, hook)
 
 					--If dollars
 					if effects[ii].h_dollars then
-						ease_dollars(effects[ii].h_dollars)
+						shen_ease_dollars(effects[ii].h_dollars)
 						card_eval_status_text(G.hand.highlighted[i], 'dollars', effects[ii].h_dollars, percent)
 					end
 
@@ -1590,7 +1590,7 @@ function generate_temple_request_text()
 end
 
 local shen_ease_dollars = ease_dollars
-function ease_dollars(mod, instant)
+function shen_ease_dollars(mod, instant)
 	shen_ease_dollars(mod, instant)
 	if G.GAME.starting_params.templedeck then
 		local k = G.GAME.starting_params.temple_current_request.key
@@ -1672,12 +1672,12 @@ function temple_congrats(txt)
 	modded_play_sound("shen_temple", true, 1, 1)
 end
 
-function create_cards(count, neg, type)
+function shen_create_cards(count, neg, type)
 	for i = 1, count do
 		G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
 			if G.consumeables.config.card_limit > #G.consumeables.cards or neg then
 				play_sound('timpani')
-				local card = create_card(type, G.consumeables, nil, nil, nil, nil, nil, 'temple_reward')
+				local card = shen_create_card(type, G.consumeables, nil, nil, nil, nil, nil, 'temple_reward')
 				if neg then
 					card:set_edition({ negative = true }, true)
 				end
@@ -1688,11 +1688,11 @@ function create_cards(count, neg, type)
 	end
 end
 
-function create_joker(neg)
+function shen_create_joker(neg)
 	G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
 		if G.jokers.config.card_limit > #G.jokers.cards or neg then
 			play_sound('timpani')
-			local card = create_card('Joker', G.jokers, nil, nil, nil, nil, nil, 'temple_reward')
+			local card = shen_create_card('Joker', G.jokers, nil, nil, nil, nil, nil, 'temple_reward')
 			if neg then
 				card:set_edition({ negative = true }, true)
 			end
@@ -1721,23 +1721,23 @@ function complete_temple_request()
 		local t = pseudorandom_element(filtered_rewards, pseudoseed('templedeck_rewards'))
 		local k = t.key
 		if k == '5_dollars' then
-			ease_dollars(5)
+			shen_ease_dollars(5)
 		elseif k == 'tarot' then
-			create_cards(1, false, 'Tarot')
+			shen_create_cards(1, false, 'Tarot')
 		elseif k == 'planet' then
-			create_cards(1, false, 'Planet')
+			shen_create_cards(1, false, 'Planet')
 		elseif k == 'spectral' then
-			create_cards(1, false, 'Spectral')
+			shen_create_cards(1, false, 'Spectral')
 		elseif k == 'joker' then
-			create_joker(false)
+			shen_create_joker(false)
 		elseif k == 'tarots' then
-			create_cards(3, true, 'Tarot')
+			shen_create_cards(3, true, 'Tarot')
 		elseif k == 'planets' then
-			create_cards(3, true, 'Planet')
+			shen_create_cards(3, true, 'Planet')
 		elseif k == 'spectrals' then
-			create_cards(2, true, 'Spectral')
+			shen_create_cards(2, true, 'Spectral')
 		elseif k == 'negative_joker' then
-			create_joker(true)
+			shen_create_joker(true)
 		elseif k == 'joker_edition' then
 			local temp_pool = {}
 			for k, v in pairs(G.jokers.cards) do
@@ -1770,7 +1770,7 @@ function complete_temple_request()
 			G.E_MANAGER:add_event(Event({
 				func = (function()
 					if G.consumeables.config.card_limit > #G.consumeables.cards then
-						local card = create_card('Spectral', G.consumeables, nil, nil, nil, nil, 'c_black_hole', 'deck')
+						local card = shen_create_card('Spectral', G.consumeables, nil, nil, nil, nil, 'c_black_hole', 'deck')
 						card:add_to_deck()
 						G.consumeables:emplace(card)
 						play_sound('generic1', 0.9 + math.random()*0.1, 0.8)
@@ -1806,11 +1806,11 @@ function complete_temple_request()
 			G.GAME.starting_params.temple_deck_balance_effect = true
 		elseif k == 'free_rolls_effect' then
 			G.GAME.starting_params.temple_deck_free_rolls_effect = true
-			ease_dollars(100)
+			shen_ease_dollars(100)
 		elseif k == 'interest_limit_break' then
 			G.GAME.starting_params.temple_deck_interest_limit_break = true
 			G.GAME.interest_cap = 5000
-			ease_dollars(1000)
+			shen_ease_dollars(1000)
 		elseif k == 'reset_ante' then
 			local d = G.GAME.round_resets.ante - 1
 			ease_ante(-d)
@@ -1919,7 +1919,7 @@ end
 G.FUNCS.reroll_temple = function(e) --copied reroll_boss
 	stop_use()
 	G.GAME.starting_params.temple_current_request.disabled = true
-	ease_dollars(-10)
+	shen_ease_dollars(-10)
 	G.CONTROLLER.locks.boss_reroll = true
 	G.E_MANAGER:add_event(Event({
 		trigger = 'immediate',
@@ -2009,7 +2009,7 @@ end
 
 local shen_Cardarea_draw = CardArea.draw -- how 2 be incompatible with anything that modifies this function
 function CardArea.draw(self)
-    if not self.states.visible then return end 
+    if not self.states.visible then return end
     if G.VIEWING_DECK and (self==G.deck or self==G.hand or self==G.play) then return end
 
 	--added code
